@@ -1,5 +1,8 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
+
 import {
   Accordion,
   AccordionContent,
@@ -7,13 +10,13 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Folder } from '@/db/course';
-import { Button } from './ui/button';
 import { BackArrow } from '@/icons/BackArrow';
-import { useRecoilState } from 'recoil';
-import { sidebarOpen as sidebarOpenAtom } from '@/store/atoms/sidebar';
-import { useEffect, useState } from 'react';
 import { handleMarkAsCompleted } from '@/lib/utils';
+import { sidebarOpen as sidebarOpenAtom } from '@/store/atoms/sidebar';
+
 import BookmarkButton from './bookmark/BookmarkButton';
+import { Button } from './ui/button';
+import { ScrollArea } from './ui/scroll-area';
 
 export function Sidebar({
   courseId,
@@ -71,7 +74,7 @@ export function Sidebar({
           <AccordionItem
             key={content.id}
             value={`item-${content.id}`}
-            className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            className="text-gray-900 cursor-pointer dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <AccordionTrigger className="px-2 text-left">
               {content.title}
@@ -87,7 +90,7 @@ export function Sidebar({
       return (
         <div
           key={content.id}
-          className="group p-2 flex border-gray-300 border-b hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 cursor-pointer bg-gray-50 dark:bg-gray-800"
+          className="flex p-2 border-b border-gray-300 cursor-pointer group hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
           onClick={() => {
             navigateToContent(content.id);
           }}
@@ -122,19 +125,21 @@ export function Sidebar({
   }
 
   return (
-    <div className="overflow-y-scroll h-sidebar w-[300px] min-w-[133px] bg-gray-50 dark:bg-gray-800 cursor-pointer sticky top-[64px] self-start w-84">
-      <div className="flex">
-        {/* <ToggleButton
+    <div className="h-sidebar w-[300px] min-w-[133px] bg-gray-50 dark:bg-gray-800 cursor-pointer sticky top-[64px] self-start w-84">
+      <ScrollArea>
+        <div className="flex">
+          {/* <ToggleButton
             onClick={() => {
               setSidebarOpen((s) => !s);
             }}
           /> */}
-        <GoBackButton />
-      </div>
-      <Accordion type="single" collapsible className="w-full">
-        {/* Render course content */}
-        {renderContent(fullCourseContent)}
-      </Accordion>
+          <GoBackButton />
+        </div>
+        <Accordion type="single" collapsible className="w-full">
+          {/* Render course content */}
+          {renderContent(fullCourseContent)}
+        </Accordion>
+      </ScrollArea>
     </div>
   );
 }
@@ -149,7 +154,7 @@ export function ToggleButton({
   return (
     <button
       onClick={onClick}
-      className="flex flex-col justify-center items-center"
+      className="flex flex-col items-center justify-center"
     >
       <span
         className={`dark:bg-white bg-black block transition-all duration-300 ease-out  h-0.5 w-6 rounded-sm ${!sidebarOpen ? 'rotate-45 translate-y-1' : '-translate-y-0.5'}`}

@@ -1,5 +1,8 @@
 'use client';
 
+import Link from 'next/link';
+import { useMemo } from 'react';
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,8 +12,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Folder } from '@/db/course';
-import Link from 'next/link';
-import { useMemo } from 'react';
 
 export default function BreadCrumbComponent({
   rest,
@@ -18,12 +19,14 @@ export default function BreadCrumbComponent({
   fullCourseContent,
   courseContent,
   contentType,
+  className,
 }: {
   fullCourseContent: Folder[];
   rest: string[];
   course: any;
   contentType: any;
   courseContent: any;
+  className?: string;
 }) {
   const findChildContent = (contents: any, childId: any) => {
     for (const content of contents) {
@@ -61,61 +64,59 @@ export default function BreadCrumbComponent({
   }, [rest, fullCourseContent, courseContent, contentType]);
 
   return (
-    <>
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <Link href={'/'}>
-              <BreadcrumbLink>100xdevs</BreadcrumbLink>
+    <Breadcrumb className={className}>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <Link href={'/'}>
+            <BreadcrumbLink>100xdevs</BreadcrumbLink>
+          </Link>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          {generateBreadcrumbs.length > 0 ? (
+            <Link href={`/courses/${course.id}`}>
+              <BreadcrumbLink>{course.title}</BreadcrumbLink>
             </Link>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            {generateBreadcrumbs.length > 0 ? (
-              <Link href={`/courses/${course.id}`}>
-                <BreadcrumbLink>{course.title}</BreadcrumbLink>
-              </Link>
-            ) : (
-              <BreadcrumbPage>{course.title}</BreadcrumbPage>
-            )}
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          {generateBreadcrumbs.map((breadcrumb, index, array) => {
-            const indexofBreadCrumbId = rest.indexOf(breadcrumb.id.toString());
-            let finalRouteArray: any[] = [];
-            if (indexofBreadCrumbId !== -1) {
-              finalRouteArray = rest.slice(0, indexofBreadCrumbId + 1);
-            } else {
-              finalRouteArray = [...rest];
-            }
-            return (
-              <>
-                {index !== array.length - 1 ? (
-                  <>
-                    <BreadcrumbItem>
-                      <Link
-                        href={`/courses/${course.id}/${finalRouteArray.join('/')}`}
-                      >
-                        <BreadcrumbLink className="font-semibold">
-                          {breadcrumb?.title}
-                        </BreadcrumbLink>
-                      </Link>
-                    </BreadcrumbItem>
-                    {/* <BreadcrumbSeparator /> */}
-                    {index + 1 < array.length && <BreadcrumbSeparator />}
-                  </>
-                ) : (
+          ) : (
+            <BreadcrumbPage>{course.title}</BreadcrumbPage>
+          )}
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        {generateBreadcrumbs.map((breadcrumb, index, array) => {
+          const indexofBreadCrumbId = rest.indexOf(breadcrumb.id.toString());
+          let finalRouteArray: any[] = [];
+          if (indexofBreadCrumbId !== -1) {
+            finalRouteArray = rest.slice(0, indexofBreadCrumbId + 1);
+          } else {
+            finalRouteArray = [...rest];
+          }
+          return (
+            <>
+              {index !== array.length - 1 ? (
+                <>
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="font-semibold">
-                      {breadcrumb.title}
-                    </BreadcrumbPage>
+                    <Link
+                      href={`/courses/${course.id}/${finalRouteArray.join('/')}`}
+                    >
+                      <BreadcrumbLink className="font-semibold">
+                        {breadcrumb?.title}
+                      </BreadcrumbLink>
+                    </Link>
                   </BreadcrumbItem>
-                )}
-              </>
-            );
-          })}
-        </BreadcrumbList>
-      </Breadcrumb>
-    </>
+                  {/* <BreadcrumbSeparator /> */}
+                  {index + 1 < array.length && <BreadcrumbSeparator />}
+                </>
+              ) : (
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="font-semibold">
+                    {breadcrumb.title}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              )}
+            </>
+          );
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }

@@ -1,10 +1,14 @@
 'use client';
-import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
+
 // import { QualitySelector } from '../QualitySelector';
 import { VideoPlayerSegment } from '@/components/VideoPlayerSegment';
-import VideoContentChapters from '../VideoContentChapters';
-import { useMemo, useState } from 'react';
 import { handleMarkAsCompleted } from '@/lib/utils';
+
+import { buttonVariants, Button } from '../ui/button';
+import VideoContentChapters from '../VideoContentChapters';
 
 export const ContentRendererClient = ({
   metadata,
@@ -88,7 +92,7 @@ export const ContentRendererClient = ({
   };
 
   return (
-    <div className="flex gap-2 items-start flex-col lg:flex-row">
+    <div className="flex flex-col items-start gap-2 lg:flex-row">
       <div className="flex-1 w-full">
         <VideoPlayerSegment
           setQuality={setQuality}
@@ -119,42 +123,34 @@ export const ContentRendererClient = ({
           }}
         />
         <br />
-        <div className="flex justify-between mb-2">
-          <div>
-            <div className="text-gray-900 dark:text-white font-bold text-2xl">
-              {content.title}
-            </div>
-
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded p-2 my-4"
+        <div className="flex flex-col justify-between w-full gap-2 mb-2">
+          <div className="text-2xl font-medium">{content.title}</div>
+          <div className="flex items-center justify-between">
+            <Button
               disabled={loadingMarkAs}
               onClick={handleMarkCompleted}
+              size={'sm'}
             >
               {contentCompleted ? 'Mark as Incomplete' : 'Mark as completed'}
-            </button>
+            </Button>
+            {!!metadata.slides && (
+              <Link
+                href={metadata.slides}
+                target="_blank"
+                className={buttonVariants({ size: 'sm', variant: 'default' })}
+              >
+                Slides
+              </Link>
+            )}
           </div>
 
           <div>
             {/* <QualitySelector /> */}
             <br />
-            {metadata.slides ? (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row-reverse',
-                  gap: '10px',
-                }}
-              >
-                <a href={metadata.slides} target="_blank">
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded p-2">
-                    Slides
-                  </button>
-                </a>
-              </div>
-            ) : null}
+
             {!showChapters && metadata.segments?.length > 0 && (
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded p-2"
+                className="p-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
                 onClick={() => {
                   scrollTo({ top: 0, behavior: 'smooth' });
                   toggleShowChapters();
@@ -168,7 +164,7 @@ export const ContentRendererClient = ({
         {nextContent ? (
           <div className="flex flex-row-reverse">
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4"
+              className="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
               onClick={() => {
                 const originalPath = window.location.pathname;
                 const parts = originalPath.split('/');
